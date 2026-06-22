@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, Pet, Product, MedicalRecord, Reminder, Appointment, Order, OrderItem } from '../../core/models/user.model';
 
-const BASE = 'http://localhost:4000';
+const BASE = 'https://new-vet-app.onrender.com';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

@@ -5,7 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { User } from '../models/user.model';
 
 const STORAGE_KEY = 'vet_user';
-const API = 'http://localhost:4000';
+const API = 'https://new-vet-app.onrender.com';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
