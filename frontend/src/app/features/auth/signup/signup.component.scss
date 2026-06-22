@@ -1,0 +1,68 @@
+.signup-page { display: flex; min-height: 100vh; }
+
+.signup-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px; color: #fff;
+  @media (max-width: 768px) { display: none; }
+}
+.brand-inner { max-width: 380px; }
+.logo-wrap { width: 72px; height: 72px; background: rgba(255,255,255,0.15); border-radius: 20px;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+  .paw { font-size: 36px; }
+}
+.brand-name { font-size: 36px; font-weight: 700; margin: 0 0 8px; }
+.brand-tagline { font-size: 16px; opacity: 0.85; margin: 0 0 40px; line-height: 1.5; }
+.features-list { display: flex; flex-direction: column; gap: 16px; }
+.feature-item { display: flex; align-items: center; gap: 12px; font-size: 15px; opacity: 0.9;
+  mat-icon { width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+}
+
+.signup-form-panel {
+  width: 520px; display: flex; align-items: center; justify-content: center;
+  padding: 48px 32px; background: #F8FAFC;
+  overflow-y: auto;
+  @media (max-width: 768px) { width: 100%; padding: 32px 20px; }
+}
+
+.signup-card {
+  width: 100%; max-width: 440px;
+  background: #fff; border-radius: 16px; padding: 40px 36px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+  @media (max-width: 480px) { padding: 28px 20px; }
+}
+.card-header { margin-bottom: 28px;
+  h2 { font-size: 26px; font-weight: 700; color: #1E293B; margin: 0 0 6px; }
+  p  { font-size: 14px; color: #64748B; margin: 0; }
+}
+
+.w-full { width: 100%; }
+.mt-3 { margin-top: 10px; }
+
+.error-banner { display: flex; align-items: center; gap: 8px; background: #FEE2E2; color: #B91C1C;
+  border-radius: 8px; padding: 10px 14px; font-size: 14px; margin-top: 12px;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.success-banner { display: flex; align-items: flex-start; gap: 12px; background: #DCFCE7; color: #15803D;
+  border-radius: 12px; padding: 16px 20px;
+  mat-icon { font-size: 28px; width: 28px; height: 28px; flex-shrink: 0; }
+  div { display: flex; flex-direction: column; gap: 4px;
+    strong { font-size: 15px; font-weight: 700; }
+    span   { font-size: 13px; opacity: 0.8; }
+  }
+}
+
+.submit-btn { width: 100%; margin-top: 20px; height: 48px; font-size: 15px; font-weight: 600;
+  background: #2563EB !important; color: #fff !important; border-radius: 10px !important;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  // Material wraps the button content in .mdc-button__label — center the icon + text there
+  ::ng-deep .mdc-button__label { display: inline-flex; align-items: center; gap: 8px; }
+  mat-icon { font-size: 20px; width: 20px; height: 20px; margin: 0; }
+}
+
+.login-link { text-align: center; margin-top: 18px; font-size: 14px; color: #64748B;
+  a { color: #2563EB; font-weight: 600; text-decoration: none; &:hover { text-decoration: underline; } }
+}

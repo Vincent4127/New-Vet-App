@@ -1,0 +1,120 @@
+<input #picInput type="file" accept="image/jpeg,image/png,image/webp" style="display:none" (change)="onPicSelected($event)" />
+
+<div class="profile-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <button mat-icon-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div>
+      <h1>Edit Profile</h1>
+      <p>Update your account information</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-wrap">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <!-- Avatar card -->
+      <div class="profile-card">
+        <div class="avatar-section">
+          <div class="avatar-wrap" (click)="picInput.click()" title="Change profile picture">
+            @if (uploadingPic()) {
+              <div class="avatar-spinner"><div class="spin-ring"></div></div>
+            } @else if (profilePicUrl()) {
+              <img [src]="profilePicUrl()!" alt="Profile" />
+            } @else {
+              <span class="avatar-initials">{{ (auth.getUsername() || 'U')[0].toUpperCase() }}</span>
+            }
+            <div class="avatar-overlay"><mat-icon>photo_camera</mat-icon></div>
+          </div>
+          <div class="avatar-hint">
+            <p class="avatar-name">{{ auth.getUsername() }}</p>
+            <p class="avatar-sub">Click the photo to change it</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account info card -->
+      <div class="profile-card">
+        <h3 class="section-title"><mat-icon>person</mat-icon> Account Info</h3>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Username</mat-label>
+            <mat-icon matPrefix>badge</mat-icon>
+            <input matInput formControlName="username" placeholder="Your name" />
+            @if (form.get('username')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" type="email" placeholder="your@email.com" />
+            @if (form.get('email')?.hasError('required')) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.get('email')?.hasError('email')) {
+              <mat-error>Invalid email address</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Phone</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input matInput formControlName="phone" placeholder="8 digits" maxlength="8" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Password card -->
+      <div class="profile-card">
+        <h3 class="section-title"><mat-icon>lock</mat-icon> Change Password</h3>
+        <p class="section-sub">Leave blank to keep your current password</p>
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>New Password</mat-label>
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <input matInput formControlName="newPassword" type="password" placeholder="Min. 8 characters" />
+            @if (form.get('newPassword')?.hasError('minlength')) {
+              <mat-error>Password must be at least 8 characters</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Confirm Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input matInput formControlName="confirmPass" type="password" placeholder="Repeat new password" />
+            @if (form.hasError('passwordMismatch') && form.get('confirmPass')?.dirty) {
+              <mat-error>Passwords do not match</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      @if (serverError()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          {{ serverError() }}
+        </div>
+      }
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="goBack()">Cancel</button>
+        <button mat-raised-button type="submit" class="save-btn" [disabled]="form.invalid || saving()">
+          @if (saving()) {
+            <div class="btn-spinner"></div>
+          } @else {
+            <mat-icon>save</mat-icon>
+          }
+          {{ saving() ? 'Saving…' : 'Save Changes' }}
+        </button>
+      </div>
+
+    </form>
+  }
+</div>

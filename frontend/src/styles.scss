@@ -1,0 +1,93 @@
+// ── Angular Material theme (must come before Tailwind) ────────────────────────
+@use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// ── Google Fonts ──────────────────────────────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+// ── Angular Material custom theme ─────────────────────────────────────────────
+$vet-primary: mat.m2-define-palette(mat.$m2-blue-palette, 600, 300, 800);
+$vet-accent:  mat.m2-define-palette(mat.$m2-red-palette, A200, A100, A400);
+$vet-warn:    mat.m2-define-palette(mat.$m2-red-palette);
+
+$vet-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $vet-primary,
+    accent:  $vet-accent,
+    warn:    $vet-warn,
+  ),
+  typography: mat.m2-define-typography-config(
+    $font-family: 'Inter, system-ui, sans-serif',
+  ),
+  density: 0,
+));
+
+@include mat.all-component-themes($vet-theme);
+
+// ── Global resets ─────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #F8FAFC;
+  color: #1E293B;
+}
+
+// ── Design tokens ─────────────────────────────────────────────────────────────
+:root {
+  --color-primary:       #2563EB;
+  --color-primary-light: #60A5FA;
+  --color-primary-dark:  #1D4ED8;
+  --color-accent:        #FF6B6B;
+  --color-surface:       #F8FAFC;
+  --color-card:          #FFFFFF;
+  --color-text:          #1E293B;
+  --color-text-muted:    #64748B;
+  --color-border:        #E2E8F0;
+  --shadow-card:         0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-card-hover:   0 4px 12px 0 rgb(0 0 0 / 0.12);
+  --radius-card:         12px;
+}
+
+// ── Shared utilities ──────────────────────────────────────────────────────────
+.vet-card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease;
+  &:hover { box-shadow: var(--shadow-card-hover); }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.badge-success { background: #DCFCE7; color: #15803D; }
+  &.badge-warning { background: #FEF9C3; color: #92400E; }
+  &.badge-danger  { background: #FEE2E2; color: #B91C1C; }
+  &.badge-info    { background: #DBEAFE; color: #1D4ED8; }
+  &.badge-neutral { background: #F1F5F9; color: #475569; }
+}
+
+// Skeleton shimmer
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}

@@ -1,0 +1,88 @@
+<div class="checkout-page">
+  <div class="page-header">
+    <a mat-icon-button routerLink="/app/cart" class="back-btn"><mat-icon>arrow_back</mat-icon></a>
+    <div>
+      <h1>Checkout</h1>
+      <p>Review your order and enter a delivery address</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton skeleton-card"></div>
+  } @else {
+    <div class="checkout-layout">
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="placeOrder()" class="checkout-form">
+        <div class="form-card">
+          <h3 class="section-title"><mat-icon>person</mat-icon> Your Details</h3>
+          <p class="section-sub">From your profile — used for this order only.</p>
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="full">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="username" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full">
+              <mat-label>Phone</mat-label>
+              <input matInput formControlName="phone" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <h3 class="section-title"><mat-icon>local_shipping</mat-icon> Delivery Address</h3>
+          <div class="form-grid">
+            <mat-form-field appearance="outline" class="full">
+              <mat-label>Delivery address</mat-label>
+              <mat-icon matPrefix>home</mat-icon>
+              <textarea matInput formControlName="address" rows="3"
+                        placeholder="Street, building, city, any notes for delivery…"></textarea>
+              @if (form.get('address')?.hasError('required') && form.get('address')?.touched) {
+                <mat-error>Delivery address is required</mat-error>
+              }
+              @if (form.get('address')?.hasError('minlength')) {
+                <mat-error>Please enter a fuller address</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        @if (serverError()) {
+          <div class="error-banner"><mat-icon>error_outline</mat-icon>{{ serverError() }}</div>
+        }
+      </form>
+
+      <!-- Summary -->
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="summary-items">
+          @for (item of cart.items(); track item.productId) {
+            <div class="summary-item">
+              <div class="si-image">
+                @if (itemImage(item.image)) {
+                  <img [src]="itemImage(item.image)" [alt]="item.name" />
+                } @else { <div class="no-img">🐾</div> }
+              </div>
+              <div class="si-info">
+                <span class="si-name">{{ item.name }}</span>
+                <span class="si-qty">{{ item.qty }} × ${{ item.price }}</span>
+              </div>
+              <span class="si-sub">${{ item.price * item.qty }}</span>
+            </div>
+          }
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>${{ cart.total() }}</span>
+        </div>
+        <button mat-raised-button class="place-btn" (click)="placeOrder()" [disabled]="placing() || form.invalid">
+          @if (placing()) { <div class="btn-spinner"></div> Placing… }
+          @else { <ng-container><mat-icon>check_circle</mat-icon> Place Order</ng-container> }
+        </button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(ng version 2>$null)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(Start-Sleep -Seconds 8; try { $r = Invoke-WebRequest -Uri \"http://localhost:4200\" -TimeoutSec 5 -UseBasicParsing; \"HTTP $\\($r.StatusCode\\) — app is live\" } catch { \"Not ready yet: $_\" })"
+    ]
+  }
+}

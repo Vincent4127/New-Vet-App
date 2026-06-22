@@ -1,0 +1,82 @@
+<div class="orders-page">
+  <div class="page-header">
+    <div>
+      <h1>Orders</h1>
+      <p>{{ orders().length }} pending order{{ orders().length === 1 ? '' : 's' }}</p>
+    </div>
+    <button mat-icon-button class="refresh-btn" (click)="load()" title="Refresh"><mat-icon>refresh</mat-icon></button>
+  </div>
+
+  @if (loading()) {
+    <div class="orders-list">
+      @for (i of [1,2,3]; track i) { <div class="skeleton skeleton-card"></div> }
+    </div>
+  } @else if (orders().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📦</span>
+      <h3>No pending orders</h3>
+      <p>New orders placed by customers will appear here.</p>
+    </div>
+  } @else {
+    <div class="orders-list">
+      @for (order of orders(); track order._id) {
+        <div class="order-card">
+          <div class="order-head">
+            <div class="order-id">
+              <mat-icon>receipt_long</mat-icon>
+              <span>{{ order.orderNumber }}</span>
+            </div>
+            <span class="status-chip pending">Pending</span>
+          </div>
+
+          <div class="order-grid">
+            <!-- Customer -->
+            <div class="order-block">
+              <span class="block-label"><mat-icon>person</mat-icon> Customer</span>
+              <span class="block-main">{{ order.customer.username }}</span>
+              <span class="block-sub">{{ order.customer.email }}</span>
+              <span class="block-sub">{{ order.customer.phone }}</span>
+            </div>
+            <!-- Address -->
+            <div class="order-block">
+              <span class="block-label"><mat-icon>local_shipping</mat-icon> Delivery address</span>
+              <span class="block-main address">{{ order.address }}</span>
+            </div>
+            <!-- Date -->
+            <div class="order-block">
+              <span class="block-label"><mat-icon>schedule</mat-icon> Placed</span>
+              <span class="block-main">{{ formatDate(order.createdAt) }}</span>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div class="order-items">
+            @for (item of order.items; track item.productId) {
+              <div class="order-item">
+                <div class="oi-image">
+                  @if (itemImage(item.image)) { <img [src]="itemImage(item.image)" [alt]="item.name" /> }
+                  @else { <div class="no-img">🐾</div> }
+                </div>
+                <span class="oi-name">{{ item.name }}</span>
+                <span class="oi-qty">×{{ item.qty }}</span>
+                <span class="oi-sub">${{ item.price * item.qty }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="order-foot">
+            <span class="order-total">Total: <strong>${{ order.total }}</strong></span>
+            <div class="order-actions">
+              <button mat-stroked-button class="cancel-btn" (click)="setStatus(order, 'cancelled')" [disabled]="actingOn() === order._id">
+                <mat-icon>close</mat-icon> Cancel
+              </button>
+              <button mat-raised-button class="confirm-btn" (click)="setStatus(order, 'confirmed')" [disabled]="actingOn() === order._id">
+                <mat-icon>check</mat-icon> Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

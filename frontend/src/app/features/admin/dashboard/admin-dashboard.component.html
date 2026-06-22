@@ -1,0 +1,69 @@
+<div class="dashboard">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Clinic overview at a glance</p>
+  </div>
+
+  <!-- Stat cards -->
+  @if (loading()) {
+    <div class="stat-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-stat skeleton"></div>
+      }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      @for (s of stats(); track s.label) {
+        <a class="stat-card" [routerLink]="s.route">
+          <div class="stat-icon" [style.background]="s.bg">
+            <mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ s.value }}</span>
+            <span class="stat-label">{{ s.label }}</span>
+          </div>
+          <mat-icon class="arrow">chevron_right</mat-icon>
+        </a>
+      }
+    </div>
+  }
+
+  <!-- Upcoming appointments -->
+  <div class="section-header">
+    <h2>Upcoming Appointments</h2>
+    <a mat-button routerLink="/admin/appointments" class="view-all-btn">
+      View all <mat-icon>arrow_forward</mat-icon>
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="appt-list">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="skeleton-appt skeleton"></div>
+      }
+    </div>
+  } @else if (recentAppointments().length === 0) {
+    <div class="empty-panel">
+      <mat-icon>calendar_today</mat-icon>
+      <span>No upcoming appointments</span>
+    </div>
+  } @else {
+    <div class="appt-list">
+      @for (a of recentAppointments(); track a.userId) {
+        <div class="appt-row">
+          <div class="appt-avatar">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="appt-info">
+            <span class="appt-name">{{ a.username }}</span>
+            <span class="appt-email">{{ a.email }}</span>
+          </div>
+          <div class="appt-time">
+            <mat-icon>schedule</mat-icon>
+            {{ formatAppt(a.appointment) }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

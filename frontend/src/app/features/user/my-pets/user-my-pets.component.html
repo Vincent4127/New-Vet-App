@@ -1,0 +1,172 @@
+<div class="my-pets-page">
+
+  <!-- Header -->
+  <div class="welcome-header">
+    <div class="welcome-left">
+      <div class="welcome-icon"><mat-icon>favorite</mat-icon></div>
+      <div>
+        <h1>Welcome back, {{ auth.getUsername() }} 🐾</h1>
+        <p>Here's an overview of your pets and their health.</p>
+      </div>
+    </div>
+    @if (!showAddForm()) {
+      <button mat-raised-button class="add-btn" (click)="openAdd()">
+        <mat-icon>add</mat-icon> Add Pet
+      </button>
+    }
+  </div>
+
+  <!-- Add form -->
+  @if (showAddForm()) {
+    <div class="add-form-card" [formGroup]="addForm">
+      <h3><mat-icon>pets</mat-icon> New Pet</h3>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" />
+          @if (addForm.get('name')?.invalid && addForm.get('name')?.touched) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Breed</mat-label>
+          <input matInput formControlName="breed" />
+          @if (addForm.get('breed')?.invalid && addForm.get('breed')?.touched) { <mat-error>Required</mat-error> }
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender">
+            <mat-option value="male">&#9794; Male</mat-option>
+            <mat-option value="female">&#9792; Female</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="dob-group">
+          <span class="dob-label">Date of Birth</span>
+          <div class="dob-row">
+            <mat-form-field appearance="outline"><mat-label>Day</mat-label><input matInput type="number" min="1" max="31" formControlName="dobDay" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Month</mat-label><input matInput type="number" min="1" max="12" formControlName="dobMonth" /></mat-form-field>
+            <mat-form-field appearance="outline"><mat-label>Year</mat-label><input matInput type="number" min="1990" [max]="currentYear" formControlName="dobYear" /></mat-form-field>
+          </div>
+          @if (addForm.hasError('dobTooOld') && addForm.dirty) {
+            <div class="form-error small"><mat-icon>error_outline</mat-icon>Year cannot be earlier than 1990.</div>
+          } @else if (addForm.hasError('dobFuture') && addForm.dirty) {
+            <div class="form-error small"><mat-icon>error_outline</mat-icon>Date of birth cannot be in the future.</div>
+          }
+        </div>
+      </div>
+      @if (addError()) { <div class="form-error"><mat-icon>error_outline</mat-icon>{{ addError() }}</div> }
+      <div class="form-actions">
+        <button mat-stroked-button (click)="cancelAdd()" [disabled]="addLoading()">Cancel</button>
+        <button mat-raised-button class="save-btn" (click)="submitAdd()" [disabled]="addLoading()">
+          @if (addLoading()) {
+            <ng-container><mat-spinner diameter="18"/><span>Saving...</span></ng-container>
+          } @else {
+            <ng-container><mat-icon>add</mat-icon><span>Add Pet</span></ng-container>
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="pet-grid">
+      @for (i of [1,2,3]; track i) { <div class="skeleton skeleton-card"></div> }
+    </div>
+  } @else if (pets().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">&#128062;</span>
+      <h3>No pets yet</h3>
+      <p>Add your first pet to get started.</p>
+      <button mat-raised-button class="add-btn" (click)="openAdd()">
+        <mat-icon>add</mat-icon> Add Pet
+      </button>
+    </div>
+  } @else {
+    <div class="pet-grid">
+      @for (pet of pets(); track pet._id || pet.name) {
+        <div class="pet-card">
+          <!-- Photo -->
+          <div class="pet-photo-col">
+            <label class="photo-wrapper" matTooltip="Change photo" matTooltipPosition="above">
+              <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none"
+                     (change)="uploadPetPic(pet, $event)" />
+              @if (uploadingPic() === pet.name) {
+                <div class="photo-spinner"><div class="spin-ring"></div></div>
+              } @else if (petPicUrl(pet)) {
+                <img [src]="petPicUrl(pet)!" [alt]="pet.name" class="pet-photo" />
+              } @else {
+                <div class="pet-photo-placeholder" [class]="pet.gender === 'male' ? 'male' : 'female'">
+                  {{ pet.name[0].toUpperCase() }}
+                </div>
+              }
+              <div class="photo-overlay"><mat-icon>photo_camera</mat-icon></div>
+            </label>
+          </div>
+
+          <!-- Info -->
+          <div class="pet-info-col">
+            <div class="pet-name-row">
+              <h3 class="pet-name">{{ pet.name }}</h3>
+              <span class="gender-icon">{{ pet.gender === 'male' ? '&#9794;' : '&#9792;' }}</span>
+              <span class="health-badge" [class]="healthStatus(pet).cls">{{ healthStatus(pet).label }}</span>
+            </div>
+            <p class="pet-breed">{{ pet.breed }}</p>
+            <div class="pet-details">
+              <div class="detail-row">
+                <mat-icon>calendar_today</mat-icon>
+                <span class="detail-label">Age</span>
+                <span class="detail-value">{{ petAge(pet.dateOfBirth) }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>event_available</mat-icon>
+                <span class="detail-label">Next Visit</span>
+                <span class="detail-value">{{ nextVisit(pet) }}</span>
+              </div>
+            </div>
+
+            @if (editingPet()?.name === pet.name) {
+              <div class="edit-inline" [formGroup]="editForm">
+                <mat-form-field appearance="outline" class="full">
+                  <mat-label>New name</mat-label>
+                  <input matInput formControlName="newName" />
+                </mat-form-field>
+                @if (editError()) { <div class="form-error small"><mat-icon>error_outline</mat-icon>{{ editError() }}</div> }
+                <div class="edit-actions">
+                  <button mat-stroked-button (click)="cancelEdit()" [disabled]="editLoading()">Cancel</button>
+                  <button mat-raised-button class="save-btn small" (click)="submitEdit()" [disabled]="editLoading()">
+                    @if (editLoading()) {
+                      <ng-container><mat-spinner diameter="14"/><span>Saving</span></ng-container>
+                    } @else {
+                      <ng-container><mat-icon>save</mat-icon><span>Save</span></ng-container>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+
+            <div class="pet-actions">
+              <button mat-stroked-button class="edit-btn" (click)="startEdit(pet)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-stroked-button class="delete-btn" (click)="deletePet(pet)"
+                      [disabled]="deleteLoading() === pet.name">
+                <mat-icon>delete_outline</mat-icon> Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="cta-banner">
+      <div class="cta-left">
+        <mat-icon class="cta-icon">event_available</mat-icon>
+        <div>
+          <strong>Need to schedule a visit?</strong>
+          <span>Book an appointment for any of your pets in just a few clicks.</span>
+        </div>
+      </div>
+      <a mat-raised-button routerLink="/app/appointments" class="cta-btn">
+        <mat-icon>calendar_today</mat-icon> Book Appointment
+      </a>
+    </div>
+  }
+</div>

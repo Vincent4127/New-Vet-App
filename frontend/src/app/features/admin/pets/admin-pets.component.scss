@@ -1,0 +1,81 @@
+.page-header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  h1 { font-size: 24px; font-weight: 700; color: #1E293B; margin: 0 0 4px; }
+  p  { color: #64748B; margin: 0; font-size: 14px; }
+}
+.toolbar { display: flex; gap: 12px; margin-bottom: 20px; }
+.search-field { flex: 1; max-width: 480px; }
+
+.pet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+.pet-card {
+  background: #fff; border-radius: 14px; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  overflow: hidden; display: flex; flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+  &:hover { box-shadow: 0 4px 14px rgb(0 0 0 / 0.12); transform: translateY(-2px); }
+}
+.pet-avatar-wrap {
+  display: block; position: relative; cursor: pointer;
+  &:hover .avatar-cam-overlay { opacity: 1; }
+}
+.avatar-cam-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+  mat-icon { color: #fff; font-size: 22px; width: 22px; height: 22px; }
+}
+.pet-avatar {
+  height: 80px; display: flex; align-items: center; justify-content: center;
+  position: relative; font-size: 32px; font-weight: 700; color: #fff;
+  &.male     { background: linear-gradient(135deg, #2563EB, #60A5FA); }
+  &.female   { background: linear-gradient(135deg, #DB2777, #F472B6); }
+  &.uploading { background: #F1F5F9; }
+  &.has-photo { height: 80px; padding: 0;
+    img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  }
+  .gender-icon { position: absolute; bottom: 8px; right: 14px; font-size: 18px; opacity: 0.8; }
+  .spin-ring { width: 28px; height: 28px; border: 3px solid #E2E8F0; border-top-color: #2563EB;
+    border-radius: 50%; animation: spin 0.8s linear infinite; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.pet-body { padding: 14px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.pet-top  { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pet-name { font-size: 17px; font-weight: 700; color: #1E293B; margin: 0; }
+
+.badge {
+  display: inline-flex; align-items: center; padding: 3px 10px;
+  border-radius: 999px; font-size: 11px; font-weight: 600;
+  &.badge-info   { background: #DBEAFE; color: #1D4ED8; }
+  &.badge-accent { background: #FCE7F3; color: #9D174D; }
+}
+.pet-meta { display: flex; flex-direction: column; gap: 4px;
+  span { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569;
+    mat-icon { font-size: 15px; width: 15px; height: 15px; color: #94A3B8; }
+  }
+}
+.pet-owner { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #2563EB; font-weight: 500;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+  .owner-email { color: #94A3B8; font-weight: 400; }
+}
+.pet-counts { display: flex; gap: 8px; flex-wrap: wrap; }
+.count-chip { display: flex; align-items: center; gap: 4px; background: #F1F5F9; color: #475569;
+  font-size: 12px; padding: 3px 10px; border-radius: 999px;
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+}
+.pet-actions { display: flex; align-items: center; gap: 4px; padding: 8px 12px 12px; border-top: 1px solid #F1F5F9;
+  .edit-btn { flex: 1; border-color: #E2E8F0 !important; color: #475569 !important; border-radius: 8px !important;
+    font-size: 13px !important; height: 36px !important; display: flex; align-items: center; gap: 4px;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    &:hover { border-color: #2563EB !important; color: #2563EB !important; }
+  }
+  .delete-btn { color: #94A3B8 !important; &:hover { color: #EF4444 !important; } }
+}
+.empty-state { text-align: center; padding: 64px 24px; background: #fff; border-radius: 14px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  .empty-icon { font-size: 52px; display: block; margin-bottom: 16px; }
+  h3 { font-size: 20px; font-weight: 600; color: #1E293B; margin: 0 0 8px; }
+  p  { color: #64748B; margin: 0; }
+}
+.skeleton { background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 800px 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 14px; }
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+.skeleton-card { height: 220px; }

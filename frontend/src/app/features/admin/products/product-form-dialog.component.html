@@ -1,0 +1,163 @@
+<div class="dialog-shell">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="dialog-title-row">
+      <div class="dialog-icon-wrap">
+        <mat-icon>{{ isAdd ? 'add_shopping_cart' : 'edit' }}</mat-icon>
+      </div>
+      <div>
+        <h2 class="dialog-title">{{ title }}</h2>
+        <p class="dialog-sub">{{ isAdd ? 'Fill in product details below' : 'Update product information' }}</p>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <mat-dialog-content class="dialog-body">
+    <form [formGroup]="form" novalidate>
+
+      <!-- Image upload (add mode) -->
+      @if (isAdd) {
+        <div class="image-upload-area" (click)="fileInput.click()">
+          @if (imagePreview()) {
+            <img [src]="imagePreview()!" alt="Preview" class="image-preview" />
+            <div class="image-overlay">
+              <mat-icon>photo_camera</mat-icon>
+              <span>Change image</span>
+            </div>
+          } @else {
+            <div class="upload-placeholder">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>Click to upload image</span>
+              <small>JPEG, PNG or WebP · max 3 MB</small>
+            </div>
+          }
+          <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onFileSelect($event)" />
+        </div>
+      }
+
+      <!-- Edit mode: show current image -->
+      @if (!isAdd && imagePreview()) {
+        <div class="edit-image-wrap">
+          <img [src]="imagePreview()!" alt="Current product image" />
+          <span class="edit-image-note">Image cannot be changed after upload</span>
+        </div>
+      }
+
+      <!-- Product ID (add only) -->
+      @if (isAdd) {
+        <div class="field-group">
+          <label class="field-label">Product ID <span class="req">*</span></label>
+          <mat-form-field appearance="outline" class="full">
+            <input matInput formControlName="productId" placeholder="e.g. FOOD201" />
+            <mat-hint>Min 6 characters · must be unique</mat-hint>
+            @if (form.get('productId')?.invalid && form.get('productId')?.touched) {
+              <mat-error>Min 6 characters required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      }
+
+      <!-- Name -->
+      <div class="field-group">
+        <label class="field-label">Product name <span class="req">*</span></label>
+        <mat-form-field appearance="outline" class="full">
+          <input matInput [formControlName]="isAdd ? 'name' : 'newName'" placeholder="e.g. Premium Dog Food" />
+          @if ((form.get('name') ?? form.get('newName'))?.invalid && (form.get('name') ?? form.get('newName'))?.touched) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Price + Stock -->
+      <div class="field-row two-col">
+        <div class="field-group">
+          <label class="field-label">Price ($) <span class="req">*</span></label>
+          <mat-form-field appearance="outline" class="full">
+            <input matInput type="number" min="0" step="0.01"
+                   [formControlName]="isAdd ? 'price' : 'newPrice'" placeholder="0.00" />
+            @if ((form.get('price') ?? form.get('newPrice'))?.invalid && (form.get('price') ?? form.get('newPrice'))?.touched) {
+              <mat-error>Valid price required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Stock quantity <span class="req">*</span></label>
+          <mat-form-field appearance="outline" class="full">
+            <input matInput type="number" min="0"
+                   [formControlName]="isAdd ? 'stockQty' : 'newStockQty'" placeholder="0" />
+            @if ((form.get('stockQty') ?? form.get('newStockQty'))?.invalid && (form.get('stockQty') ?? form.get('newStockQty'))?.touched) {
+              <mat-error>Quantity ≥ 0 required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="field-group">
+        <label class="field-label">Category <span class="req">*</span></label>
+        <mat-form-field appearance="outline" class="full">
+          <mat-select [formControlName]="isAdd ? 'type' : 'newType'" placeholder="Select category">
+            @if (!isAdd) { <mat-option value="">— No category —</mat-option> }
+            @for (t of data.productTypes; track t.value) {
+              <mat-option [value]="t.value">{{ t.label }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('type')?.invalid && form.get('type')?.touched) {
+            <mat-error>Category is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="field-group">
+        <label class="field-label">Description <span class="req">*</span></label>
+        <mat-form-field appearance="outline" class="full">
+          <textarea matInput rows="3"
+                    [formControlName]="isAdd ? 'description' : 'newDescription'"
+                    placeholder="Brief product description…"></textarea>
+          @if ((form.get('description') ?? form.get('newDescription'))?.invalid && (form.get('description') ?? form.get('newDescription'))?.touched) {
+            <mat-error>Description is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Active toggle -->
+      <div class="toggle-row">
+        <div class="toggle-text">
+          <span class="toggle-label">Active / visible in store</span>
+          <span class="toggle-sub">Inactive products won't appear in the user store</span>
+        </div>
+        <mat-slide-toggle [formControlName]="isAdd ? 'isActive' : 'newIsActive'" color="primary" />
+      </div>
+
+      <!-- Error -->
+      @if (error()) {
+        <div class="dialog-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+    </form>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button class="cancel-btn" (click)="cancel()" [disabled]="loading()">
+      Cancel
+    </button>
+    <button mat-raised-button class="save-btn" (click)="submit()" [disabled]="loading()">
+      @if (loading()) {
+        <mat-spinner diameter="18" />
+        <span>Saving…</span>
+      } @else {
+        <mat-icon>{{ isAdd ? 'add' : 'save' }}</mat-icon>
+        <span>{{ isAdd ? 'Add Product' : 'Save Changes' }}</span>
+      }
+    </button>
+  </mat-dialog-actions>
+</div>

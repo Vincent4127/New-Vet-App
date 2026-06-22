@@ -1,0 +1,82 @@
+<div class="appts-page">
+  <div class="page-header">
+    <div>
+      <h1>Appointments</h1>
+      <p>{{ filtered().length }} booked appointment{{ filtered().length === 1 ? '' : 's' }}</p>
+    </div>
+    <button mat-stroked-button class="refresh-btn" (click)="load()">
+      <mat-icon>refresh</mat-icon> Refresh
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by username or email…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="table-card">
+      @for (i of [1,2,3,4,5]; track i) { <div class="skeleton skeleton-row"></div> }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📅</span>
+      <h3>No appointments booked</h3>
+      <p>{{ searchQuery() ? 'Try a different search.' : 'Appointments will appear here once users book them.' }}</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-header">
+        <span>User</span>
+        <span>Date &amp; Time</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+      @for (row of filtered(); track row.userId) {
+        <div class="table-row">
+          <!-- User -->
+          <div class="user-cell">
+            <div class="avatar">{{ row.username[0].toUpperCase() }}</div>
+            <div class="user-info">
+              <span class="username">{{ row.username }}</span>
+              <span class="email">{{ row.email }}</span>
+            </div>
+          </div>
+
+          <!-- Date & time -->
+          <div class="datetime-cell">
+            <mat-icon>event</mat-icon>
+            <span>{{ formatAppt(row.appointment) }}</span>
+          </div>
+
+          <!-- Status -->
+          <div class="status-cell">
+            <span class="badge" [class]="isUpcoming(row.appointment) ? 'badge-success' : 'badge-neutral'">
+              {{ isUpcoming(row.appointment) ? 'Upcoming' : 'Past' }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="action-cell">
+            <button mat-stroked-button class="cancel-btn"
+              (click)="cancelAppt(row)"
+              [disabled]="cancelLoading() === row.userId.toString()">
+              @if (cancelLoading() === row.userId.toString()) {
+                <mat-icon class="spinning">sync</mat-icon>
+              } @else {
+                <mat-icon>event_busy</mat-icon>
+              }
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

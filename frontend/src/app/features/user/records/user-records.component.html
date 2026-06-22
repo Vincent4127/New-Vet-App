@@ -1,0 +1,141 @@
+<div class="records-page">
+  <div class="page-header">
+    <h1>Medical Records &amp; Reminders</h1>
+    <p>Health history and care reminders for all your pets</p>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-list">@for (i of [1,2]; track i) { <div class="skeleton skeleton-panel"></div> }</div>
+  } @else if (pets().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <h3>No pets found</h3>
+      <p>Add pets first to manage their records.</p>
+    </div>
+  } @else {
+    <mat-accordion multi>
+      @for (pet of pets(); track pet._id || pet.name) {
+        <mat-expansion-panel class="pet-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="panel-title">
+              <div class="pet-dot" [class]="pet.gender === 'male' ? 'male' : 'female'">{{ pet.name[0].toUpperCase() }}</div>
+              <span class="pet-label">{{ pet.name }}</span>
+              <span class="pet-breed">{{ pet.breed }}</span>
+            </mat-panel-title>
+            <mat-panel-description class="panel-desc">
+              <span class="chip">{{ pet.medicalRecords ? pet.medicalRecords.length : 0 }} records</span>
+              <span class="chip warn">{{ pet.reminders ? pet.reminders.length : 0 }} reminders</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Medical Records -->
+          <div class="subsection">
+            <h4 class="subsection-title"><mat-icon>medical_services</mat-icon> Medical Records</h4>
+            @if (!pet.medicalRecords || pet.medicalRecords.length === 0) {
+              <p class="sub-empty">No records on file.</p>
+            } @else {
+              <div class="record-list">
+                @for (rec of pet.medicalRecords; track rec.recordId) {
+                  <div class="record-card">
+                    <div class="rec-type">{{ rec.type }}</div>
+                    <div class="rec-body">
+                      <span class="rec-title">{{ rec.title }}</span>
+                      <span class="rec-diag">{{ rec.diagnosis }}</span>
+                      <span class="rec-notes">{{ rec.notes }}</span>
+                      <span class="rec-date"><mat-icon>calendar_today</mat-icon>{{ formatDate(rec.date) }}</span>
+                    </div>
+                    <button mat-icon-button class="del-btn" matTooltip="Delete" (click)="deleteRecord(pet.name, rec.recordId)">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Reminders -->
+          <div class="subsection">
+            <div class="subsection-header">
+              <h4 class="subsection-title"><mat-icon>notifications</mat-icon> Reminders</h4>
+              @if (addingReminderFor() !== pet.name) {
+                <button mat-stroked-button class="add-remind-btn" (click)="startReminder(pet.name)">
+                  <mat-icon>add</mat-icon> Add
+                </button>
+              }
+            </div>
+
+            @if (addingReminderFor() === pet.name) {
+              <div class="remind-form" [formGroup]="reminderForm">
+                <mat-form-field appearance="outline" class="full">
+                  <mat-label>Reminder title</mat-label>
+                  <input matInput formControlName="title" placeholder="e.g. Annual vaccine" />
+                  @if (reminderForm.get('title')?.invalid && reminderForm.get('title')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <div class="date-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Day</mat-label><input matInput type="number" formControlName="day" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Month</mat-label><input matInput type="number" formControlName="month" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Year</mat-label><input matInput type="number" [min]="currentYear" formControlName="year" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Hour</mat-label><input matInput type="number" formControlName="hour" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Min</mat-label><input matInput type="number" formControlName="minutes" />
+                  </mat-form-field>
+                </div>
+                @if (reminderForm.hasError('datePast') && reminderForm.dirty) {
+                  <div class="form-error"><mat-icon>error_outline</mat-icon>Reminder date cannot be in the past.</div>
+                }
+                @if (reminderError()) {
+                  <div class="form-error"><mat-icon>error_outline</mat-icon>{{ reminderError() }}</div>
+                }
+                <div class="form-actions">
+                  <button mat-stroked-button (click)="cancelReminder()" [disabled]="reminderLoading()">Cancel</button>
+                  <button mat-raised-button class="save-btn" (click)="submitReminder(pet.name)" [disabled]="reminderLoading()">
+                    @if (reminderLoading()) {
+                      <ng-container><mat-spinner diameter="16"/><span>Saving…</span></ng-container>
+                    } @else {
+                      <ng-container><mat-icon>add_alert</mat-icon><span>Set Reminder</span></ng-container>
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (!pet.reminders || pet.reminders.length === 0) {
+              <p class="sub-empty">No reminders set.</p>
+            } @else {
+              <div class="reminder-list">
+                @for (rem of pet.reminders; track rem.reminderId) {
+                  <div class="reminder-card" [class.overdue]="isOverdue(rem.dueDate)">
+                    <div class="remind-icon" [class.overdue-icon]="isOverdue(rem.dueDate)">
+                      <mat-icon>{{ isOverdue(rem.dueDate) ? 'alarm_off' : 'notifications_active' }}</mat-icon>
+                    </div>
+                    <div class="remind-body">
+                      <span class="remind-title">{{ rem.title }}</span>
+                      <span class="remind-due">{{ formatDue(rem.dueDate) }}</span>
+                      @if (isOverdue(rem.dueDate)) {
+                        <span class="overdue-badge">Overdue</span>
+                      }
+                    </div>
+                    <button mat-icon-button class="del-btn" matTooltip="Delete"
+                      (click)="deleteReminder(pet.name, rem.reminderId.toString())">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>

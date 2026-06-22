@@ -1,0 +1,170 @@
+.login-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+// ── Left branding panel ───────────────────────────────────────────────────────
+.login-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: #fff;
+
+  @media (max-width: 768px) { display: none; }
+}
+
+.brand-inner {
+  max-width: 380px;
+}
+
+.logo-wrap {
+  width: 72px;
+  height: 72px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+
+  .paw { font-size: 36px; }
+}
+
+.brand-name {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.brand-tagline {
+  font-size: 16px;
+  opacity: 0.85;
+  margin: 0 0 40px;
+  line-height: 1.5;
+}
+
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  opacity: 0.9;
+
+  mat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+}
+
+// ── Right form panel ──────────────────────────────────────────────────────────
+.login-form-panel {
+  width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  background: #F8FAFC;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 32px 20px;
+  }
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+}
+
+.card-header {
+  margin-bottom: 32px;
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1E293B;
+    margin: 0 0 6px;
+  }
+  p {
+    font-size: 14px;
+    color: #64748B;
+    margin: 0;
+  }
+}
+
+.w-full { width: 100%; }
+.mt-3 { margin-top: 12px; }
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FEE2E2;
+  color: #B91C1C;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-top: 12px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 24px;
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #2563EB !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  // Material wraps the button content in .mdc-button__label — center the icon + text there
+  ::ng-deep .mdc-button__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  mat-spinner { display: inline-block; }
+  mat-icon { font-size: 20px; width: 20px; height: 20px; margin: 0; }
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #64748B;
+
+  a {
+    color: #2563EB;
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}

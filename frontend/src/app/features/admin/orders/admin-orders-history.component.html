@@ -1,0 +1,96 @@
+<div class="history-page">
+  <div class="page-header">
+    <h1>Orders History</h1>
+    <p>Handled orders organized by the day they were placed</p>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton skeleton-card"></div>
+  } @else {
+    <!-- Calendar -->
+    <div class="calendar-card">
+      <div class="calendar-head">
+        <button mat-icon-button (click)="prevMonth()" aria-label="Previous month"><mat-icon>chevron_left</mat-icon></button>
+        <span class="month-label">{{ monthLabel() }}</span>
+        <button mat-icon-button (click)="nextMonth()" aria-label="Next month"><mat-icon>chevron_right</mat-icon></button>
+      </div>
+
+      <div class="calendar-grid weekdays">
+        @for (wd of weekdays; track wd) { <div class="weekday">{{ wd }}</div> }
+      </div>
+
+      <div class="calendar-grid">
+        @for (cell of cells(); track $index) {
+          @if (cell.day === null) {
+            <div class="cal-cell empty"></div>
+          } @else {
+            <button class="cal-cell"
+                    [class.has-orders]="cell.count > 0"
+                    [class.selected]="selectedKey() === cell.key"
+                    [disabled]="cell.count === 0"
+                    (click)="selectCell(cell)">
+              <span class="cell-day">{{ cell.day }}</span>
+              @if (cell.count > 0) { <span class="cell-badge">{{ cell.count }}</span> }
+            </button>
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Selected day's orders -->
+    @if (selectedKey()) {
+      <div class="day-orders">
+        <h2 class="day-title">{{ selectedDateLabel() }} · {{ selectedOrders().length }} order(s)</h2>
+
+        @for (order of selectedOrders(); track order._id) {
+          <div class="order-card">
+            <div class="order-head">
+              <div class="order-id">
+                <mat-icon>receipt_long</mat-icon>
+                <span>{{ order.orderNumber }}</span>
+                <span class="order-time">{{ formatTime(order.createdAt) }}</span>
+              </div>
+              <span class="status-chip" [class]="order.status">{{ order.status }}</span>
+            </div>
+
+            <div class="order-grid">
+              <div class="order-block">
+                <span class="block-label"><mat-icon>person</mat-icon> Customer</span>
+                <span class="block-main">{{ order.customer.username }}</span>
+                <span class="block-sub">{{ order.customer.email }}</span>
+                <span class="block-sub">{{ order.customer.phone }}</span>
+              </div>
+              <div class="order-block">
+                <span class="block-label"><mat-icon>local_shipping</mat-icon> Delivery address</span>
+                <span class="block-main address">{{ order.address }}</span>
+              </div>
+            </div>
+
+            <div class="order-items">
+              @for (item of order.items; track item.productId) {
+                <div class="order-item">
+                  <div class="oi-image">
+                    @if (itemImage(item.image)) { <img [src]="itemImage(item.image)" [alt]="item.name" /> }
+                    @else { <div class="no-img">🐾</div> }
+                  </div>
+                  <span class="oi-name">{{ item.name }}</span>
+                  <span class="oi-qty">×{{ item.qty }}</span>
+                  <span class="oi-sub">${{ item.price * item.qty }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="order-foot">
+              <span class="order-total">Total: <strong>${{ order.total }}</strong></span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="hint">
+        <mat-icon>touch_app</mat-icon>
+        <span>Select a highlighted date to see the orders placed that day.</span>
+      </div>
+    }
+  }
+</div>

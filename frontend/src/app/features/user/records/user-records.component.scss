@@ -1,0 +1,85 @@
+.page-header { margin-bottom: 24px;
+  h1 { font-size: 24px; font-weight: 700; color: #1E293B; margin: 0 0 4px; }
+  p  { color: #64748B; margin: 0; font-size: 14px; }
+}
+.pet-panel { margin-bottom: 8px !important; border-radius: 12px !important; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08) !important; }
+.panel-title { display: flex; align-items: center; gap: 10px; }
+.pet-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+  &.male   { background: linear-gradient(135deg, #2563EB, #60A5FA); }
+  &.female { background: linear-gradient(135deg, #DB2777, #F472B6); }
+}
+.pet-label { font-weight: 600; color: #1E293B; font-size: 15px; }
+.pet-breed { font-size: 13px; color: #64748B; }
+.panel-desc { display: flex; gap: 6px; }
+.chip { background: #F1F5F9; color: #475569; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+  &.warn { background: #FEF9C3; color: #92400E; }
+}
+.subsection { margin-bottom: 20px; }
+.subsection-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.subsection-title { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: #1E293B; margin: 0 0 10px;
+  mat-icon { font-size: 17px; width: 17px; height: 17px; color: #2563EB; }
+}
+.sub-empty { color: #94A3B8; font-size: 13px; margin: 0 0 8px; }
+.add-remind-btn { border-color: #E2E8F0 !important; color: #2563EB !important; border-radius: 8px !important;
+  font-size: 12px !important; height: 32px !important; display: flex; align-items: center; gap: 4px;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.record-list { display: flex; flex-direction: column; gap: 8px; }
+.record-card { display: flex; align-items: flex-start; gap: 10px; background: #F8FAFC; border-radius: 10px; padding: 12px; }
+.rec-type { background: #EFF6FF; color: #2563EB; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.rec-body { flex: 1; display: flex; flex-direction: column; gap: 2px;
+  .rec-title { font-size: 13px; font-weight: 600; color: #1E293B; }
+  .rec-diag  { font-size: 12px; color: #475569; }
+  .rec-notes { font-size: 12px; color: #64748B; font-style: italic; }
+  .rec-date  { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #94A3B8; margin-top: 3px;
+    mat-icon { font-size: 12px; width: 12px; height: 12px; }
+  }
+}
+.del-btn { color: #CBD5E1 !important; flex-shrink: 0; width: 32px !important; height: 32px !important;
+  &:hover { color: #EF4444 !important; } mat-icon { font-size: 17px; width: 17px; height: 17px; }
+}
+
+.remind-form { background: #F8FAFC; border-radius: 10px; padding: 14px; margin-bottom: 12px;
+  .full { width: 100%; }
+}
+.date-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  @media (min-width: 480px) { grid-template-columns: repeat(5, 1fr); }
+}
+.form-error { display: flex; align-items: center; gap: 6px; color: #B91C1C; font-size: 12px; margin-top: 4px;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+}
+.form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.save-btn { background: #2563EB !important; color: #fff !important; border-radius: 8px !important; font-weight: 600 !important;
+  display: flex; align-items: center; gap: 6px;
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+}
+
+.reminder-list { display: flex; flex-direction: column; gap: 6px; }
+.reminder-card { display: flex; align-items: center; gap: 10px; background: #F8FAFC; border-radius: 10px; padding: 10px 12px;
+  &.overdue { background: #FFF5F5; border-left: 3px solid #EF4444; }
+}
+.remind-icon { width: 34px; height: 34px; border-radius: 50%; background: #FEF9C3; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  mat-icon { color: #D97706; font-size: 17px; width: 17px; height: 17px; }
+  &.overdue-icon { background: #FEE2E2; mat-icon { color: #EF4444; } }
+}
+.remind-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.remind-title { font-size: 13px; font-weight: 600; color: #1E293B; }
+.remind-due   { font-size: 12px; color: #64748B; }
+.overdue-badge { display: inline-flex; background: #FEE2E2; color: #B91C1C; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px; width: fit-content;
+}
+
+.empty-state { text-align: center; padding: 64px 24px; background: #fff; border-radius: 14px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  .empty-icon { font-size: 52px; display: block; margin-bottom: 16px; }
+  h3 { font-size: 20px; font-weight: 600; color: #1E293B; margin: 0 0 8px; }
+  p  { color: #64748B; margin: 0; }
+}
+.skeleton { background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 800px 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 12px;
+}
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+.skeleton-list { display: flex; flex-direction: column; gap: 8px; }
+.skeleton-panel { height: 64px; }

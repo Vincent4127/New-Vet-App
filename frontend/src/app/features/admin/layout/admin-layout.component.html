@@ -1,0 +1,82 @@
+<div class="admin-shell" [class.sidebar-collapsed]="!sidebarOpen()">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-icon">🐾</div>
+      @if (sidebarOpen()) {
+        <div class="logo-text-wrap">
+          <span class="logo-main">Paw+Care</span>
+          <span class="logo-sub">Veterinary Clinic</span>
+        </div>
+      }
+    </div>
+
+    <!-- Profile → Edit Profile page -->
+    <div class="sidebar-profile" (click)="goToProfile()" [class.collapsed]="!sidebarOpen()" matTooltip="Edit profile" matTooltipPosition="right">
+      <div class="avatar-ring">
+        @if (profilePicUrl()) {
+          <img [src]="profilePicUrl()!" alt="Profile" class="avatar-img" />
+        } @else {
+          <div class="avatar-initials">{{ (auth.getUsername() || 'A')[0].toUpperCase() }}</div>
+        }
+        <div class="avatar-overlay"><mat-icon>edit</mat-icon></div>
+      </div>
+      @if (sidebarOpen()) {
+        <div class="profile-info">
+          <span class="profile-name">{{ auth.getUsername() }}</span>
+          <span class="profile-role">Administrator</span>
+        </div>
+      }
+    </div>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.route) {
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-item"
+           [matTooltip]="sidebarOpen() ? '' : item.label" matTooltipPosition="right"
+           (click)="closeSidebarOnMobile()">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          @if (sidebarOpen()) { <span>{{ item.label }}</span> }
+        </a>
+      }
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <button mat-button class="collapse-btn" (click)="toggleSidebar()" [matTooltip]="sidebarOpen() ? '' : 'Expand'" matTooltipPosition="right">
+        <mat-icon>{{ sidebarOpen() ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        @if (sidebarOpen()) { <span>Collapse</span> }
+      </button>
+      <button mat-button class="logout-btn" (click)="logout()" [matTooltip]="sidebarOpen() ? '' : 'Logout'" matTooltipPosition="right">
+        <mat-icon>logout</mat-icon>
+        @if (sidebarOpen()) { <span>Logout</span> }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile backdrop -->
+  @if (sidebarOpen()) {
+    <div class="mobile-backdrop" (click)="toggleSidebar()"></div>
+  }
+
+  <!-- ── Main area ─────────────────────────────────────────────────── -->
+  <div class="main-area">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button mat-icon-button class="mobile-toggle" (click)="toggleSidebar()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+      <div class="topbar-right"></div>
+    </header>
+
+    <!-- Page content -->
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

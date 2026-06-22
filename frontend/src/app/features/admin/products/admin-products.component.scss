@@ -1,0 +1,262 @@
+// ── Page header ────────────────────────────────────────────────────────────
+.products-page { }
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  h1 { font-size: 24px; font-weight: 700; color: #1E293B; margin: 0 0 4px; }
+  p  { color: #64748B; margin: 0; font-size: 14px; }
+}
+
+.add-btn {
+  background: #FF6B6B !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  white-space: nowrap;
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+// ── Toolbar ────────────────────────────────────────────────────────────────
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.type-filter {
+  width: 200px;
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────────
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+// ── Product card ───────────────────────────────────────────────────────────
+.product-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover { box-shadow: 0 4px 14px rgb(0 0 0 / 0.12); transform: translateY(-2px); }
+  &.inactive { opacity: 0.65; }
+}
+
+// Image area
+.card-image {
+  position: relative;
+  height: 190px;
+  background: #F1F5F9;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    .product-card:hover & { transform: scale(1.04); }
+  }
+
+  .no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    mat-icon { font-size: 48px; width: 48px; height: 48px; color: #CBD5E1; }
+  }
+}
+
+.status-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.type-chip {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(37, 99, 235, 0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Card body
+.card-body {
+  padding: 14px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.product-id {
+  font-size: 11px;
+  color: #94A3B8;
+  font-family: 'Courier New', monospace;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.product-desc {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2563EB;
+}
+
+.stock {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+// Card actions
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px 12px;
+  border-top: 1px solid #F1F5F9;
+
+  .edit-btn {
+    flex: 1;
+    border-color: #E2E8F0 !important;
+    color: #475569 !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    height: 36px !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    &:hover { border-color: #2563EB !important; color: #2563EB !important; }
+  }
+
+  .toggle-btn {
+    color: #64748B;
+    mat-icon { font-size: 26px; width: 26px; height: 26px; }
+    &:hover { color: #2563EB; }
+  }
+
+  .delete-btn {
+    color: #94A3B8;
+    &:hover { color: #EF4444; }
+  }
+}
+
+// Badges (global, but also used here)
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.badge-success { background: #DCFCE7; color: #15803D; }
+  &.badge-warning { background: #FEF9C3; color: #92400E; }
+  &.badge-danger  { background: #FEE2E2; color: #B91C1C; }
+  &.badge-neutral { background: #F1F5F9; color: #475569; }
+}
+
+// ── Skeleton loader ────────────────────────────────────────────────────────
+.skeleton-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+.img-skeleton { height: 190px; }
+
+.skeleton-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.line-1 { height: 16px; border-radius: 6px; width: 60%; }
+.line-2 { height: 14px; border-radius: 6px; width: 90%; }
+.line-3 { height: 14px; border-radius: 6px; width: 75%; }
+
+// ── Empty state ────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 72px 24px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+
+  .empty-icon { font-size: 56px; display: block; margin-bottom: 16px; }
+  h3 { font-size: 20px; font-weight: 600; color: #1E293B; margin: 0 0 8px; }
+  p  { color: #64748B; margin: 0 0 24px; }
+}

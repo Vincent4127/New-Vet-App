@@ -1,0 +1,132 @@
+<div class="home-page">
+  <!-- Greeting -->
+  <div class="greeting">
+    <div>
+      <h1>Welcome back, {{ auth.user()?.username }}! 🐾</h1>
+      <p>Here's a summary of your pets and upcoming events.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="quick-grid">
+      @for (i of [1,2,3]; track i) { <div class="skeleton skeleton-card"></div> }
+    </div>
+  } @else {
+    <!-- Quick-stat cards -->
+    <div class="quick-grid">
+      <a class="quick-card" routerLink="/app/my-pets">
+        <div class="quick-icon pets-icon"><mat-icon>pets</mat-icon></div>
+        <div class="quick-info">
+          <span class="quick-value">{{ pets().length }}</span>
+          <span class="quick-label">My Pets</span>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </a>
+
+      <a class="quick-card" routerLink="/app/appointments">
+        <div class="quick-icon appt-icon"><mat-icon>calendar_today</mat-icon></div>
+        <div class="quick-info">
+          <span class="quick-value">{{ hasAppointment() ? '1' : '0' }}</span>
+          <span class="quick-label">{{ hasAppointment() ? 'Appointment booked' : 'No appointment' }}</span>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </a>
+
+      <a class="quick-card" routerLink="/app/records">
+        <div class="quick-icon remind-icon"><mat-icon>notifications</mat-icon></div>
+        <div class="quick-info">
+          <span class="quick-value">{{ upcomingReminders().length }}</span>
+          <span class="quick-label">Upcoming reminders</span>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </a>
+    </div>
+
+    <!-- Appointment banner -->
+    @if (hasAppointment()) {
+      <div class="appt-banner">
+        <div class="appt-banner-icon"><mat-icon>event_available</mat-icon></div>
+        <div class="appt-banner-info">
+          <span class="appt-banner-label">Your next appointment</span>
+          <span class="appt-banner-time">{{ formatAppt() }}</span>
+        </div>
+        <a mat-stroked-button routerLink="/app/appointments" class="appt-manage-btn">Manage</a>
+      </div>
+    }
+
+    <!-- My Pets quick view -->
+    <div class="section">
+      <div class="section-header">
+        <h2>My Pets</h2>
+        <a mat-button routerLink="/app/my-pets" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      </div>
+
+      @if (pets().length === 0) {
+        <div class="empty-banner">
+          <span>🐶</span>
+          <div>
+            <p>You haven't added any pets yet.</p>
+            <a mat-raised-button routerLink="/app/my-pets" class="cta-btn">Add your first pet</a>
+          </div>
+        </div>
+      } @else {
+        <div class="pets-grid">
+          @for (pet of pets().slice(0, 4); track pet._id || pet.name) {
+            <a class="pet-card" routerLink="/app/my-pets" [class]="pet.gender === 'male' ? 'male' : 'female'">
+              <div class="pet-card-photo">
+                @if (petPicUrl(pet)) {
+                  <img [src]="petPicUrl(pet)!" [alt]="pet.name" />
+                } @else {
+                  <div class="pet-card-initial" [class]="pet.gender === 'male' ? 'male' : 'female'">
+                    {{ pet.name[0].toUpperCase() }}
+                  </div>
+                }
+              </div>
+              <div class="pet-card-body">
+                <div class="pet-card-name-row">
+                  <span class="pet-card-name">{{ pet.name }}</span>
+                  <mat-icon class="gender-icon">{{ pet.gender === 'male' ? 'male' : 'female' }}</mat-icon>
+                </div>
+                <span class="pet-card-breed">{{ pet.breed }}</span>
+                @if (petAge(pet.dateOfBirth)) {
+                  <span class="pet-card-age"><mat-icon>cake</mat-icon>{{ petAge(pet.dateOfBirth) }}</span>
+                }
+              </div>
+              <mat-icon class="pet-card-arrow">chevron_right</mat-icon>
+            </a>
+          }
+          @if (pets().length > 4) {
+            <a class="pet-card more" routerLink="/app/my-pets">
+              <div class="more-content">
+                <span class="more-count">+{{ pets().length - 4 }}</span>
+                <span class="more-label">View all pets</span>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Upcoming reminders -->
+    @if (upcomingReminders().length > 0) {
+      <div class="section">
+        <div class="section-header">
+          <h2>Upcoming Reminders</h2>
+          <a mat-button routerLink="/app/records" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+        </div>
+        <div class="reminder-list">
+          @for (r of upcomingReminders(); track r.title) {
+            <div class="reminder-row">
+              <div class="reminder-dot"><mat-icon>notifications_active</mat-icon></div>
+              <div class="reminder-info">
+                <span class="reminder-title">{{ r.title }}</span>
+                <span class="reminder-pet">{{ r.petName }}</span>
+              </div>
+              <span class="reminder-date">{{ formatDueDate(r.dueDate) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

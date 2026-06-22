@@ -1,0 +1,144 @@
+<div class="appts-page">
+  <div class="page-header">
+    <h1>Appointments</h1>
+    <p>Book and manage your clinic visits</p>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton skeleton-card"></div>
+  } @else {
+
+    <!-- Current appointment -->
+    @if (hasAppointment()) {
+      <div class="appt-card" [class.upcoming]="isUpcoming()" [class.past]="!isUpcoming()">
+        <div class="appt-icon-wrap">
+          <mat-icon>{{ isUpcoming() ? 'event_available' : 'event' }}</mat-icon>
+        </div>
+        <div class="appt-info">
+          <span class="appt-status-label">{{ isUpcoming() ? 'Upcoming appointment' : 'Past appointment' }}</span>
+          <span class="appt-datetime">{{ formatAppt() }}</span>
+          <span class="appt-hint">
+            @if (isUpcoming()) { Please arrive 10 minutes early. }
+            @else { This appointment has passed. }
+          </span>
+        </div>
+        <button mat-stroked-button class="cancel-btn" (click)="cancel()" [disabled]="cancelLoading()">
+          @if (cancelLoading()) {
+            <mat-spinner diameter="16" />
+          } @else {
+            <mat-icon>event_busy</mat-icon>
+          }
+          Cancel
+        </button>
+      </div>
+    } @else {
+      <!-- No appointment -->
+      <div class="no-appt-card">
+        <div class="no-appt-illustration">📅</div>
+        <h3>No appointment booked</h3>
+        <p>Schedule a visit with our clinic at a time that works for you.</p>
+        <button mat-raised-button class="book-btn" (click)="openBooking()">
+          <mat-icon>add</mat-icon> Book Appointment
+        </button>
+      </div>
+    }
+
+    <!-- Booking form -->
+    @if (showForm()) {
+      <div class="book-form-card" [formGroup]="form">
+        <h3><mat-icon>calendar_today</mat-icon> Choose date &amp; time</h3>
+
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Day</mat-label>
+            <input matInput type="number" min="1" max="31" formControlName="day" placeholder="1–31" />
+            @if (form.get('day')?.invalid && form.get('day')?.touched) {
+              <mat-error>1–31</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Month</mat-label>
+            <input matInput type="number" min="1" max="12" formControlName="month" placeholder="1–12" />
+            @if (form.get('month')?.invalid && form.get('month')?.touched) {
+              <mat-error>1–12</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Year</mat-label>
+            <input matInput type="number" [min]="currentYear" formControlName="year" [placeholder]="currentYear.toString()" />
+            @if (form.get('year')?.invalid && form.get('year')?.touched) {
+              <mat-error>Min {{ currentYear }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hour</mat-label>
+            <input matInput type="number" min="0" max="23" formControlName="hour" placeholder="0–23" />
+            @if (form.get('hour')?.invalid && form.get('hour')?.touched) {
+              <mat-error>0–23</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Minutes</mat-label>
+            <input matInput type="number" min="0" max="59" formControlName="minutes" placeholder="0–59" />
+            @if (form.get('minutes')?.invalid && form.get('minutes')?.touched) {
+              <mat-error>0–59</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (form.dirty) {
+          @if (form.hasError('inPast')) {
+            <div class="form-error"><mat-icon>error_outline</mat-icon>You cannot book an appointment in the past.</div>
+          } @else if (form.hasError('closedDay')) {
+            <div class="form-error"><mat-icon>error_outline</mat-icon>The clinic is closed on Sundays. Please pick another day.</div>
+          } @else if (form.hasError('outsideHours')) {
+            <div class="form-error"><mat-icon>error_outline</mat-icon>Please choose a time within clinic hours (Mon–Fri 8:00–18:00, Sat 9:00–14:00).</div>
+          }
+        }
+
+        @if (bookError()) {
+          <div class="form-error"><mat-icon>error_outline</mat-icon>{{ bookError() }}</div>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button (click)="cancelForm()" [disabled]="bookLoading()">Cancel</button>
+          <button mat-raised-button class="book-btn" (click)="book()" [disabled]="bookLoading()">
+            @if (bookLoading()) {
+              <ng-container><mat-spinner diameter="18" /><span>Booking…</span></ng-container>
+            } @else {
+              <ng-container><mat-icon>event_available</mat-icon><span>Confirm Booking</span></ng-container>
+            }
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Info section -->
+    <div class="info-section">
+      <h3>Clinic information</h3>
+      <div class="info-grid">
+        <div class="info-card">
+          <mat-icon>schedule</mat-icon>
+          <div>
+            <strong>Opening hours</strong>
+            <span>Mon–Fri: 8:00–18:00</span>
+            <span>Sat: 9:00–14:00</span>
+            <span>Sun: Closed</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <mat-icon>info</mat-icon>
+          <div>
+            <strong>Booking rules</strong>
+            <span>One appointment per account</span>
+            <span>Cancel at least 24h in advance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

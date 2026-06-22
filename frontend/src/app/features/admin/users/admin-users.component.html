@@ -1,0 +1,99 @@
+<div class="users-page">
+  <div class="page-header">
+    <div>
+      <h1>Users</h1>
+      <p>{{ filtered().length }} user{{ filtered().length === 1 ? '' : 's' }}
+        @if (users().length !== filtered().length) { of {{ users().length }} total }
+      </p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by name, email or phone…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="table-card">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton-row skeleton"></div>
+      }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">👤</span>
+      <h3>No users found</h3>
+      <p>{{ searchQuery() ? 'Try a different search term.' : 'No users registered yet.' }}</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <!-- Header -->
+      <div class="table-header">
+        <span class="col-user">User</span>
+        <span class="col-phone">Phone</span>
+        <span class="col-role">Role</span>
+        <span class="col-appt">Appointment</span>
+        <span class="col-pets">Pets</span>
+        <span class="col-actions">Actions</span>
+      </div>
+
+      @for (user of filtered(); track user._id) {
+        <div class="table-row">
+          <!-- User info -->
+          <div class="col-user user-cell">
+            <div class="avatar">{{ user.username[0].toUpperCase() }}</div>
+            <div class="user-info">
+              <span class="username">{{ user.username }}</span>
+              <span class="email">{{ user.email }}</span>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="col-phone cell-text">{{ user.phone ?? '—' }}</div>
+
+          <!-- Role -->
+          <div class="col-role">
+            <span class="badge" [class]="user.role === 'admin' ? 'badge-info' : 'badge-neutral'">
+              {{ user.role }}
+            </span>
+          </div>
+
+          <!-- Appointment -->
+          <div class="col-appt cell-text">
+            @if (hasAppointment(user)) {
+              <span class="appt-set">
+                <mat-icon>event</mat-icon>
+                {{ formatAppt(user) }}
+              </span>
+            } @else {
+              <span class="appt-none">No appointment</span>
+            }
+          </div>
+
+          <!-- Pets count -->
+          <div class="col-pets cell-text">
+            <mat-icon>pets</mat-icon>
+            {{ user.userPets ? user.userPets.length : 0 }}
+          </div>
+
+          <!-- Actions -->
+          <div class="col-actions">
+            <button mat-icon-button class="delete-btn"
+              matTooltip="Delete user" (click)="deleteUser(user)"
+              [disabled]="deleteLoading() === user._id || user.role === 'admin'">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

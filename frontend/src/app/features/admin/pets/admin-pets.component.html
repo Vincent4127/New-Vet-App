@@ -1,0 +1,100 @@
+<div class="pets-page">
+  <div class="page-header">
+    <div>
+      <h1>Pets</h1>
+      <p>{{ filtered().length }} pet{{ filtered().length === 1 ? '' : 's' }}
+        @if (pets().length !== filtered().length) { of {{ pets().length }} total }
+      </p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by name, breed or owner…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="pet-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card skeleton"></div>
+      }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🐾</span>
+      <h3>No pets found</h3>
+      <p>{{ searchQuery() ? 'Try a different search term.' : 'No pets registered yet.' }}</p>
+    </div>
+  } @else {
+    <div class="pet-grid">
+      @for (pet of filtered(); track pet._id) {
+        <div class="pet-card">
+          <label class="pet-avatar-wrap" matTooltip="Upload pet photo" matTooltipPosition="above">
+            <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none"
+                   (change)="uploadPetPic(pet, $event)" />
+            @if (uploadingPic() === pet._id) {
+              <div class="pet-avatar uploading"><div class="spin-ring"></div></div>
+            } @else if (petPicUrl(pet)) {
+              <div class="pet-avatar has-photo"><img [src]="petPicUrl(pet)!" [alt]="pet.name" /></div>
+            } @else {
+              <div class="pet-avatar" [class]="pet.gender === 'male' ? 'male' : 'female'">
+                <span>{{ pet.name[0].toUpperCase() }}</span>
+                <span class="gender-icon">{{ pet.gender === 'male' ? '&#9794;' : '&#9792;' }}</span>
+              </div>
+            }
+            <div class="avatar-cam-overlay"><mat-icon>photo_camera</mat-icon></div>
+          </label>
+
+          <div class="pet-body">
+            <div class="pet-top">
+              <h3 class="pet-name">{{ pet.name }}</h3>
+              <span class="badge" [class]="pet.gender === 'male' ? 'badge-info' : 'badge-accent'">
+                {{ pet.gender }}
+              </span>
+            </div>
+
+            <div class="pet-meta">
+              <span><mat-icon>category</mat-icon>{{ pet.breed }}</span>
+              <span><mat-icon>cake</mat-icon>{{ formatDob(pet.dateOfBirth) }}</span>
+            </div>
+
+            @if (pet.owner?.username) {
+              <div class="pet-owner">
+                <mat-icon>person</mat-icon>
+                <span>{{ pet.owner!.username }}</span>
+                <span class="owner-email">· {{ pet.owner!.email }}</span>
+              </div>
+            }
+
+            <div class="pet-counts">
+              <span class="count-chip">
+                <mat-icon>medical_services</mat-icon>
+                {{ pet.medicalRecords ? pet.medicalRecords.length : 0 }} records
+              </span>
+              <span class="count-chip">
+                <mat-icon>notifications</mat-icon>
+                {{ pet.reminders ? pet.reminders.length : 0 }} reminders
+              </span>
+            </div>
+          </div>
+
+          <div class="pet-actions">
+            <button mat-stroked-button class="edit-btn" (click)="openEdit(pet)">
+              <mat-icon>edit</mat-icon> Edit
+            </button>
+            <button mat-icon-button class="delete-btn" matTooltip="Delete pet"
+              (click)="deletePet(pet)" [disabled]="deleteLoading() === pet._id">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

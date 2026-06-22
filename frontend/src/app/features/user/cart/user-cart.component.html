@@ -1,0 +1,75 @@
+<div class="cart-page">
+  <div class="page-header">
+    <h1>🛒 My Cart</h1>
+    <p>{{ cart.count() }} item{{ cart.count() === 1 ? '' : 's' }} in your cart</p>
+  </div>
+
+  @if (cart.items().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🛒</span>
+      <h3>Your cart is empty</h3>
+      <p>Browse the store and add some products.</p>
+      <a mat-raised-button routerLink="/app/store" class="shop-btn">
+        <mat-icon>storefront</mat-icon> Go to Store
+      </a>
+    </div>
+  } @else {
+    <div class="cart-layout">
+      <!-- Items -->
+      <div class="cart-items">
+        @for (item of cart.items(); track item.productId) {
+          <div class="cart-item">
+            <div class="item-image">
+              @if (itemImage(item.image)) {
+                <img [src]="itemImage(item.image)" [alt]="item.name" />
+              } @else {
+                <div class="no-img"><span>🐾</span></div>
+              }
+            </div>
+
+            <div class="item-info">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-price">${{ item.price }} each</span>
+            </div>
+
+            <div class="item-qty">
+              <button mat-icon-button class="qty-btn" (click)="cart.decrement(item.productId)" aria-label="Decrease">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="qty-val">{{ item.qty }}</span>
+              <button mat-icon-button class="qty-btn" (click)="cart.increment(item.productId)"
+                      [disabled]="item.stockQty > 0 && item.qty >= item.stockQty" aria-label="Increase">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <div class="item-subtotal">${{ item.price * item.qty }}</div>
+
+            <button mat-icon-button class="remove-btn" (click)="cart.remove(item.productId)" aria-label="Remove" title="Remove">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Summary -->
+      <div class="cart-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-row">
+          <span>Items</span>
+          <span>{{ cart.count() }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>${{ cart.total() }}</span>
+        </div>
+        <button mat-raised-button class="checkout-btn" (click)="checkout()">
+          <mat-icon>shopping_cart_checkout</mat-icon> Proceed to Checkout
+        </button>
+        <a mat-button routerLink="/app/store" class="continue-link">
+          <mat-icon>arrow_back</mat-icon> Continue shopping
+        </a>
+      </div>
+    </div>
+  }
+</div>

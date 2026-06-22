@@ -1,0 +1,82 @@
+<div class="user-shell">
+  <!-- ── Blue top navbar ──────────────────────────────────────────── -->
+  <header class="user-topbar">
+    <div class="topbar-inner">
+
+      <!-- Logo -->
+      <div class="logo">
+        <span class="paw">🐾</span>
+        <div class="logo-text-wrap">
+          <span class="logo-main">Paw+Care</span>
+          <span class="logo-sub">Veterinary Clinic</span>
+        </div>
+      </div>
+
+      <!-- Desktop nav links -->
+      <nav class="desktop-nav">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" routerLinkActive="active" class="nav-link">
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+
+      <!-- Right actions -->
+      <div class="topbar-right">
+        <!-- Avatar + name → Edit Profile -->
+        <div class="user-profile-btn" (click)="goToProfile()" title="Edit profile">
+          <div class="user-avatar">
+            @if (profilePicUrl()) {
+              <img [src]="profilePicUrl()!" alt="Profile" />
+            } @else {
+              <span>{{ (auth.getUsername() || 'U')[0].toUpperCase() }}</span>
+            }
+          </div>
+          <span class="user-display-name">{{ auth.getUsername() }}</span>
+        </div>
+
+        <!-- Cart -->
+        <button mat-icon-button class="cart-btn" (click)="goToCart()" aria-label="Cart" title="Cart">
+          <mat-icon>shopping_cart</mat-icon>
+          @if (cart.count() > 0) {
+            <span class="cart-badge">{{ cart.count() }}</span>
+          }
+        </button>
+
+        <!-- Logout -->
+        <button mat-icon-button class="logout-btn" (click)="logout()" aria-label="Logout" title="Logout">
+          <mat-icon>logout</mat-icon>
+        </button>
+
+        <!-- Mobile hamburger -->
+        <button mat-icon-button class="hamburger" (click)="toggleMenu()" aria-label="Menu">
+          <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile nav drawer -->
+    @if (mobileMenuOpen()) {
+      <nav class="mobile-nav">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" routerLinkActive="active" class="mobile-nav-link"
+             (click)="mobileMenuOpen.set(false)">
+            {{ item.label }}
+          </a>
+        }
+        <a routerLink="/app/cart" routerLinkActive="active" class="mobile-nav-link"
+           (click)="mobileMenuOpen.set(false)">
+          Cart @if (cart.count() > 0) { ({{ cart.count() }}) }
+        </a>
+        <button mat-button class="mobile-logout" (click)="logout()">
+          <mat-icon>logout</mat-icon> Logout
+        </button>
+      </nav>
+    }
+  </header>
+
+  <!-- ── Page content ─────────────────────────────────────────────── -->
+  <main class="user-content">
+    <router-outlet />
+  </main>
+</div>

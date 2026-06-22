@@ -1,0 +1,132 @@
+<div class="products-page">
+  <!-- ── Page header ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1>Products / Store</h1>
+      <p>{{ filtered().length }} product{{ filtered().length === 1 ? '' : 's' }}
+        @if (products().length !== filtered().length) { of {{ products().length }} total }
+      </p>
+    </div>
+    <button mat-raised-button class="add-btn" (click)="openAdd()">
+      <mat-icon>add</mat-icon> Add Product
+    </button>
+  </div>
+
+  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by name, ID or description…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="type-filter">
+      <mat-label>Category</mat-label>
+      <mat-select [ngModel]="selectedType()" (ngModelChange)="selectedType.set($event)">
+        <mat-option value="all">All categories</mat-option>
+        @for (t of PRODUCT_TYPES; track t.value) {
+          <mat-option [value]="t.value">{{ t.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- ── Loading skeletons ────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="product-grid">
+      @for (i of [1,2,3,4,5,6,8]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton img-skeleton"></div>
+          <div class="skeleton-body">
+            <div class="skeleton line-1"></div>
+            <div class="skeleton line-2"></div>
+            <div class="skeleton line-3"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Empty state ──────────────────────────────────────────────────────── -->
+  @if (!loading() && filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🛍️</span>
+      <h3>No products found</h3>
+      <p>{{ searchQuery() || selectedType() !== 'all' ? 'Try adjusting your search or filter.' : 'Add your first product to get started.' }}</p>
+      @if (!searchQuery() && selectedType() === 'all') {
+        <button mat-raised-button class="add-btn" (click)="openAdd()">
+          <mat-icon>add</mat-icon> Add Product
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ── Product cards ────────────────────────────────────────────────────── -->
+  @if (!loading() && filtered().length > 0) {
+    <div class="product-grid">
+      @for (product of filtered(); track product.productId) {
+        <div class="product-card" [class.inactive]="!isActive(product)">
+
+          <!-- Image -->
+          <div class="card-image">
+            @if (firstImage(product)) {
+              <img [src]="firstImage(product)" [alt]="product.name" loading="lazy" />
+            } @else {
+              <div class="no-image"><span>🐾</span></div>
+            }
+            <div class="status-overlay">
+              <span class="badge" [class]="isActive(product) ? 'badge-success' : 'badge-neutral'">
+                {{ isActive(product) ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            @if (product.type) {
+              <div class="type-chip">{{ typeLabelFor(product.type) }}</div>
+            }
+          </div>
+
+          <!-- Body -->
+          <div class="card-body">
+            <div class="card-top">
+              <div class="product-id">{{ product.productId }}</div>
+              <span class="badge" [class]="stockBadge(product.stockQty).cls">
+                {{ stockBadge(product.stockQty).label }}
+              </span>
+            </div>
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-desc">{{ product.description }}</p>
+            <div class="card-meta">
+              <span class="price">${{ product.price }}</span>
+              <span class="stock">{{ product.stockQty }} in stock</span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="card-actions">
+            <button mat-stroked-button class="edit-btn" (click)="openEdit(product)">
+              <mat-icon>edit</mat-icon> Edit
+            </button>
+            <button mat-icon-button class="toggle-btn"
+              [matTooltip]="isActive(product) ? 'Deactivate' : 'Activate'"
+              (click)="toggleActive(product)">
+              <mat-icon>{{ isActive(product) ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+            </button>
+            <button mat-icon-button class="delete-btn" matTooltip="Delete"
+              (click)="deleteProduct(product)"
+              [disabled]="deleteLoading() === product.productId">
+              @if (deleteLoading() === product.productId) {
+                <mat-spinner diameter="18" />
+              } @else {
+                <mat-icon>delete_outline</mat-icon>
+              }
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

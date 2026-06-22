@@ -1,0 +1,134 @@
+<div class="inventory-page">
+  <div class="page-header">
+    <div>
+      <h1>Inventory</h1>
+      <p>Monitor and update product stock levels</p>
+    </div>
+    <a mat-stroked-button routerLink="/admin/products" class="manage-btn">
+      <mat-icon>storefront</mat-icon> Manage Products
+    </a>
+  </div>
+
+  <!-- Summary chips -->
+  @if (!loading()) {
+    <div class="summary-chips">
+      <div class="summary-chip total">
+        <mat-icon>inventory_2</mat-icon>
+        <span>{{ summary().total }} total</span>
+      </div>
+      <div class="summary-chip ok">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ summary().okCount }} in stock</span>
+      </div>
+      <div class="summary-chip warning">
+        <mat-icon>warning</mat-icon>
+        <span>{{ summary().lowCount }} low stock</span>
+      </div>
+      <div class="summary-chip danger">
+        <mat-icon>cancel</mat-icon>
+        <span>{{ summary().outCount }} out of stock</span>
+      </div>
+    </div>
+  }
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by name or product ID…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </mat-form-field>
+
+    <div class="filter-tabs">
+      @for (f of FILTERS; track f.value) {
+        <button class="filter-tab" [class.active]="stockFilter() === f.value"
+          [class]="f.cls" (click)="stockFilter.set(f.value)">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="table-card">
+      @for (i of [1,2,3,4,5,6]; track i) { <div class="skeleton skeleton-row"></div> }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📦</span>
+      <h3>No products match</h3>
+      <p>Try a different search or filter.</p>
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-header">
+        <span>Product</span>
+        <span>ID</span>
+        <span>Price</span>
+        <span>Status</span>
+        <span>Stock Qty</span>
+      </div>
+
+      @for (p of filtered(); track p.productId) {
+        <div class="table-row" [class.out-of-stock]="p.stockQty === 0">
+          <!-- Product -->
+          <div class="product-cell">
+            <div class="thumb">
+              @if (firstImage(p.images)) {
+                <img [src]="firstImage(p.images)" [alt]="p.name" />
+              } @else {
+                <mat-icon>image_not_supported</mat-icon>
+              }
+            </div>
+            <div class="product-info">
+              <span class="prod-name">{{ p.name }}</span>
+              @if (p.type) { <span class="prod-type">{{ p.type }}</span> }
+            </div>
+          </div>
+
+          <!-- ID -->
+          <div class="id-cell">{{ p.productId }}</div>
+
+          <!-- Price -->
+          <div class="price-cell">${{ p.price }}</div>
+
+          <!-- Status -->
+          <div class="status-cell">
+            <span class="badge" [class]="stockBadge(p.stockQty).cls">
+              {{ stockBadge(p.stockQty).label }}
+            </span>
+          </div>
+
+          <!-- Stock qty — inline edit -->
+          <div class="qty-cell">
+            @if (editingQty() === p.productId) {
+              <div class="qty-edit">
+                <input type="number" min="0" class="qty-input"
+                       [value]="newQty()" (input)="newQty.set(+$any($event.target).value)" />
+                <button mat-icon-button class="save-qty-btn" matTooltip="Save"
+                  (click)="saveQty(p.productId)" [disabled]="saveLoading()">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button class="cancel-qty-btn" matTooltip="Cancel"
+                  (click)="cancelEdit()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            } @else {
+              <div class="qty-display">
+                <span class="qty-value" [class.zero]="p.stockQty === 0">{{ p.stockQty }}</span>
+                <button mat-icon-button class="edit-qty-btn" matTooltip="Edit quantity"
+                  (click)="startEdit(p)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

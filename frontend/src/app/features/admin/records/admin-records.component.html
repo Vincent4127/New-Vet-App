@@ -1,0 +1,151 @@
+<div class="records-page">
+  <div class="page-header">
+    <h1>Medical Records</h1>
+    <p>Manage health records per pet</p>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Search by pet name, breed or owner…"
+             [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" />
+      @if (searchQuery()) {
+        <button matSuffix mat-icon-button (click)="searchQuery.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="skeleton-list">
+      @for (i of [1,2,3]; track i) { <div class="skeleton skeleton-item"></div> }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <h3>No pets found</h3>
+      <p>{{ searchQuery() ? 'Try a different search term.' : 'No pets registered yet.' }}</p>
+    </div>
+  } @else {
+    <mat-accordion multi>
+      @for (pet of filtered(); track pet._id) {
+        <mat-expansion-panel class="pet-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title class="panel-title">
+              <div class="pet-dot" [class]="pet.gender === 'male' ? 'male' : 'female'">
+                {{ pet.name[0].toUpperCase() }}
+              </div>
+              <span class="pet-label">{{ pet.name }}</span>
+              <span class="pet-breed">{{ pet.breed }}</span>
+              @if (pet.owner?.username) {
+                <span class="pet-owner">· {{ pet.owner!.username }}</span>
+              }
+            </mat-panel-title>
+            <mat-panel-description>
+              <span class="record-count">{{ pet.medicalRecords ? pet.medicalRecords.length : 0 }} record(s)</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Add Record Form -->
+          @if (addingFor() === pet._id) {
+            <div class="add-form-box" [formGroup]="addForm">
+              <h4>New Medical Record</h4>
+              <div class="form-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Record ID</mat-label>
+                  <input matInput formControlName="recordId" placeholder="e.g. REC001" />
+                  @if (addForm.get('recordId')?.invalid && addForm.get('recordId')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Type</mat-label>
+                  <mat-select formControlName="type">
+                    @for (t of RECORD_TYPES; track t) { <mat-option [value]="t">{{ t }}</mat-option> }
+                  </mat-select>
+                  @if (addForm.get('type')?.invalid && addForm.get('type')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="span2">
+                  <mat-label>Title</mat-label>
+                  <input matInput formControlName="title" />
+                  @if (addForm.get('title')?.invalid && addForm.get('title')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="span2">
+                  <mat-label>Diagnosis</mat-label>
+                  <input matInput formControlName="diagnosis" />
+                  @if (addForm.get('diagnosis')?.invalid && addForm.get('diagnosis')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="span2">
+                  <mat-label>Notes</mat-label>
+                  <textarea matInput rows="2" formControlName="notes"></textarea>
+                  @if (addForm.get('notes')?.invalid && addForm.get('notes')?.touched) {
+                    <mat-error>Required</mat-error>
+                  }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Day</mat-label>
+                  <input matInput type="number" formControlName="day" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Month</mat-label>
+                  <input matInput type="number" formControlName="month" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Year</mat-label>
+                  <input matInput type="number" [min]="currentYear" formControlName="year" />
+                </mat-form-field>
+              </div>
+              @if (addForm.hasError('datePast') && addForm.dirty) {
+                <div class="inline-error"><mat-icon>error_outline</mat-icon>Record date cannot be in the past.</div>
+              }
+              @if (addError()) {
+                <div class="inline-error"><mat-icon>error_outline</mat-icon>{{ addError() }}</div>
+              }
+              <div class="form-actions">
+                <button mat-stroked-button (click)="cancelAdd()">Cancel</button>
+                <button mat-raised-button class="save-btn" (click)="submitAdd(pet._id)" [disabled]="addLoading()">
+                  @if (addLoading()) { <ng-container><mat-spinner diameter="16"/><span>Saving…</span></ng-container> }
+                  @else { <ng-container><mat-icon>add</mat-icon><span>Add Record</span></ng-container> }
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="add-record-row">
+              <button mat-stroked-button class="add-btn" (click)="startAdd(pet._id)">
+                <mat-icon>add</mat-icon> Add Record
+              </button>
+            </div>
+          }
+
+          <!-- Records list -->
+          @if (!pet.medicalRecords || pet.medicalRecords.length === 0) {
+            <div class="no-records">No medical records yet.</div>
+          } @else {
+            <div class="records-list">
+              @for (rec of pet.medicalRecords; track rec.recordId) {
+                <div class="record-row">
+                  <div class="rec-type-badge">{{ rec.type }}</div>
+                  <div class="rec-info">
+                    <span class="rec-title">{{ rec.title }}</span>
+                    <span class="rec-diag">{{ rec.diagnosis }}</span>
+                    <span class="rec-notes">{{ rec.notes }}</span>
+                    <span class="rec-date"><mat-icon>calendar_today</mat-icon>{{ formatDate(rec.date) }}</span>
+                  </div>
+                  <button mat-icon-button class="del-btn" matTooltip="Delete record"
+                    (click)="deleteRecord(pet, rec.recordId)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  }
+</div>
